@@ -14,8 +14,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:block">
             <div className="flex items-center space-x-8">
-              <Link to="/#features" className="text-gray-300 hover:text-white">Features</Link>
-              <Link to="/#how-it-works" className="text-gray-300 hover:text-white">How It Works</Link>
+              <Link to="/about" className="text-gray-300 hover:text-white">About</Link>
               <Link to="/learn-more" className="text-gray-300 hover:text-white">Learn More</Link>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 Launch App

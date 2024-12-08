@@ -11,6 +11,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Hero />} />
+          <Route path="/about" element={<Hero />} /> {/* Using Hero component for now */}
           <Route path="/learn-more" element={<LearnMore />} />
         </Routes>
       </div>
