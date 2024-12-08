@@ -8,6 +8,23 @@ export default function LearnMore() {
         
         <div className="space-y-8">
           <section className="bg-gray-800/50 rounded-lg p-6 shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
+            <p className="text-gray-300 leading-relaxed mb-4">
+              Dr. Mojo was born from personal experience with the challenges in medical diagnosis. Several years ago, 
+              I faced the difficult journey of receiving a misdiagnosis that led to years of ineffective treatments. 
+              This experience became the driving force behind creating Dr. Mojo. Our mission is deeply personal: 
+              if we can help just one person avoid going through years of ineffective treatment regimes, then all 
+              our efforts will have been worthwhile.
+            </p>
+            <p className="text-gray-300 leading-relaxed">
+              This personal journey has shaped our commitment to developing technology that can serve as a reliable 
+              second opinion, potentially catching oversights before they lead to years of misdirected treatment. 
+              While we understand that no system is perfect, even a small improvement in diagnostic accuracy can 
+              make a profound difference in someone's life.
+            </p>
+          </section>
+
+          <section className="bg-gray-800/50 rounded-lg p-6 shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Technology Overview</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
               This platform harnesses cutting-edge advancements in large language models (LLMs) and AI vision technologies 
