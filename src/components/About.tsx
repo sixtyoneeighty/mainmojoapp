@@ -40,15 +40,15 @@ export default function About() {
           <section className="bg-gray-800/50 rounded-lg p-6 shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">About the Developers</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              Dr. Mojo is developed by sixtyoneeighty, a team dedicated to advancing healthcare through artificial 
-              intelligence. With a portfolio of health-related AI applications at various stages of development, 
-              we're committed to creating tools that make a real difference in healthcare delivery and patient 
-              outcomes.
+              Dr. Mojo is developed by sixtyoneeighty, an innovative startup focused on harnessing the power 
+              of artificial intelligence to solve real-world challenges. As a brand new company, we're driven 
+              by the vision of creating AI solutions that can make a meaningful impact in people's lives.
             </p>
             <p className="text-gray-300 leading-relaxed">
-              Our team combines expertise in artificial intelligence, medical imaging, and healthcare to develop 
-              solutions that address real-world medical challenges. Dr. Mojo is just one part of our broader 
-              vision to transform healthcare through innovative AI applications.
+              While Dr. Mojo represents our commitment to advancing medical diagnostics, we're also developing 
+              several other AI-centered applications across various domains. Our team combines expertise in 
+              artificial intelligence and software development to create innovative solutions that address 
+              real-world challenges.
             </p>
           </section>
         </div>
