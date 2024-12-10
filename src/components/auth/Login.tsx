@@ -3,13 +3,21 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useSupabase } from '../../contexts/SupabaseContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const Login = () => {
   const navigate = useNavigate();
   const { user } = useSupabase();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check for error in URL parameters
+    const queryParams = new URLSearchParams(window.location.search);
+    const errorMessage = queryParams.get('error_description');
+    if (errorMessage) {
+      setError(decodeURIComponent(errorMessage));
+    }
+
     if (user) {
       navigate('/upload');
     }
@@ -26,6 +34,12 @@ const Login = () => {
             Access your medical image analysis dashboard
           </p>
         </div>
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded relative" role="alert">
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         
         <Auth
           supabaseClient={supabase}
@@ -84,6 +98,10 @@ const Login = () => {
           redirectTo={`${window.location.origin}/auth/callback`}
           onlyThirdPartyProviders
         />
+
+        <div className="mt-4 text-sm text-gray-400 text-center">
+          <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
+        </div>
       </div>
     </div>
   );
