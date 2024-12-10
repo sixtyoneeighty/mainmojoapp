@@ -1,5 +1,6 @@
 import React from 'react';
 import { Brain, Clock, Lock, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 export default function Hero() {
@@ -15,12 +16,18 @@ export default function Hero() {
             rooms and copays.
           </p>
           <div className="flex justify-center gap-4 mb-8">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
-              Get Started
-            </button>
-            <button className="bg-gray-800 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-700 transition-colors">
+            <Link 
+              to="/login"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors inline-block"
+            >
+              Launch App
+            </Link>
+            <Link
+              to="/learn-more"
+              className="bg-gray-800 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-700 transition-colors inline-block"
+            >
               Learn More
-            </button>
+            </Link>
           </div>
         </div>
 
