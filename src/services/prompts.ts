@@ -39,9 +39,7 @@ Guidelines:
 2. Keep paragraphs short and focused
 3. Maintain consistent spacing between sections
 4. Present information in order of importance
-5. Use clear, professional language throughout
-
-Remember: While providing expert analysis, emphasize that final interpretation requires review by a qualified healthcare professional.`,
+5. Use clear, professional language throughout`,
 
   imageTypeInstructions: {
     'X-Ray': `
