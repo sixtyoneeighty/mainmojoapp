@@ -81,7 +81,7 @@ const Login = () => {
             },
           }}
           providers={['google', 'facebook']}
-          redirectTo={`${window.location.origin}/create-profile`}
+          redirectTo={`${window.location.origin}/auth/callback`}
           onlyThirdPartyProviders
         />
       </div>
