@@ -37,7 +37,10 @@ function parseAnalysisResponse(content: string): AnalysisResponse {
     console.log('Split sections:', sections);
 
     sections.forEach(section => {
-      const trimmedSection = section.trim();
+      const trimmedSection = section.trim()
+        .replace(/\*\*/g, '') // Remove double asterisks
+        .replace(/\*•\s•/g, '•') // Fix double bullet points
+        .replace(/\*•/g, '•'); // Fix single bullet points with asterisk
       
       if (trimmedSection.startsWith('TECHNICAL ASSESSMENT:')) {
         result.technique = trimmedSection
@@ -47,8 +50,7 @@ function parseAnalysisResponse(content: string): AnalysisResponse {
       else if (trimmedSection.startsWith('CLINICAL FINDINGS:')) {
         result.diagnosis = trimmedSection
           .replace('CLINICAL FINDINGS:', '')
-          .trim()
-          .replace(/\*\s/g, '• '); // Replace asterisk + space with bullet point
+          .trim();
       }
       else if (trimmedSection.startsWith('PATIENT SUMMARY:')) {
         result.explanation = trimmedSection
@@ -58,8 +60,7 @@ function parseAnalysisResponse(content: string): AnalysisResponse {
       else if (trimmedSection.startsWith('RECOMMENDATIONS:')) {
         result.recommendations = trimmedSection
           .replace('RECOMMENDATIONS:', '')
-          .trim()
-          .replace(/\*\s/g, '• '); // Replace asterisk + space with bullet point
+          .trim();
       }
     });
 
