@@ -10,6 +10,7 @@ import CreateProfile from './components/auth/CreateProfile';
 import ImageUpload from './components/upload/ImageUpload';
 import Processing from './components/analysis/Processing';
 import Results from './components/analysis/Results';
+import AuthCallback from './components/auth/AuthCallback';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -38,6 +39,7 @@ function AppRoutes() {
           <Route path="/about" element={<About />} />
           <Route path="/learn-more" element={<LearnMore />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/create-profile" element={
             <ProtectedRoute>
               <CreateProfile />
