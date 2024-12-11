@@ -1,14 +1,17 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { analyzeImage } from '../../services/openai';
 
 const ImageUpload = () => {
   const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
-  const [imageType, setImageType] = useState('');
+  const [imageType, setImageType] = useState('X-Ray');
   const [bodyArea, setBodyArea] = useState('');
   const [comments, setComments] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -38,119 +41,142 @@ const ImageUpload = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+      setError(null);
     } else {
-      alert('Please upload an image file');
+      setError('Please upload an image file');
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (image && imageType && bodyArea) {
-      // TODO: Handle image upload and analysis
-      navigate('/processing');
+    if (!image || !imageType || !bodyArea) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        
+        try {
+          const results = await analyzeImage({
+            imageType,
+            bodyArea,
+            comments,
+            imageBase64: base64String
+          });
+          
+          // Store results in session storage
+          sessionStorage.setItem('analysisResults', JSON.stringify(results));
+          
+          // Navigate to results page
+          navigate('/results');
+        } catch (error) {
+          console.error('Error during analysis:', error);
+          setError('An error occurred during analysis. Please try again.');
+          setLoading(false);
+        }
+      };
+      reader.readAsDataURL(image);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      setError('Error reading file. Please try again.');
+      setLoading(false);
     }
   };
-
-  const isFormValid = image && imageType && bodyArea;
 
   return (
     <div className="min-h-screen bg-[#0f1629] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-[#1a2137] rounded-lg shadow-xl p-6">
-          <h2 className="text-2xl font-bold text-white mb-8">Upload Medical Image</h2>
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-[#1a2137] rounded-lg shadow-xl p-8">
+          <h2 className="text-3xl font-bold text-white mb-8">Upload Medical Image</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image Upload Area */}
             <div 
-              className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                dragActive ? 'border-indigo-500 bg-indigo-50/5' : 'border-gray-600'
+              className={`relative border-2 border-dashed rounded-lg p-6 ${
+                dragActive ? 'border-indigo-500 bg-indigo-50/5' : 'border-gray-600 hover:border-indigo-500'
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              {preview ? (
-                <div className="relative">
-                  <img 
-                    src={preview} 
-                    alt="Preview" 
-                    className="max-h-64 mx-auto rounded"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setImage(null);
-                      setPreview('');
-                    }}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="text-gray-400 mb-4">
-                    Drag and drop your image here, or click to select
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              
+              <div className="text-center">
+                {preview ? (
+                  <div className="mt-4">
+                    <img 
+                      src={preview} 
+                      alt="Preview" 
+                      className="mx-auto max-h-64 rounded-lg"
+                    />
                   </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && handleFile(e.target.files[0])}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
-                  >
-                    Choose File
-                  </label>
-                </>
-              )}
+                ) : (
+                  <div className="text-gray-400">
+                    <svg 
+                      className="mx-auto h-12 w-12 text-gray-500" 
+                      stroke="currentColor" 
+                      fill="none" 
+                      viewBox="0 0 48 48" 
+                      aria-hidden="true"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" 
+                      />
+                    </svg>
+                    <p className="mt-1">Drag and drop an image, or click to select</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Dropdowns */}
+            {/* Form Fields */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="imageType" className="block text-sm font-medium text-gray-300">
-                  Image Type
+                  Image Type*
                 </label>
                 <select
                   id="imageType"
                   value={imageType}
                   onChange={(e) => setImageType(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-600 bg-[#2d3748] text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  required
                 >
-                  <option value="">Select Type</option>
-                  <option value="xray">X-ray</option>
-                  <option value="mri">MRI</option>
+                  <option value="X-Ray">X-Ray</option>
+                  <option value="MRI">MRI</option>
+                  <option value="CT">CT Scan</option>
                 </select>
               </div>
 
               <div>
                 <label htmlFor="bodyArea" className="block text-sm font-medium text-gray-300">
-                  Body Area
+                  Body Area*
                 </label>
-                <select
+                <input
+                  type="text"
                   id="bodyArea"
                   value={bodyArea}
                   onChange={(e) => setBodyArea(e.target.value)}
+                  placeholder="e.g., Chest, Knee, Lower Back"
                   className="mt-1 block w-full rounded-md border-gray-600 bg-[#2d3748] text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  required
-                >
-                  <option value="">Select Area</option>
-                  <option value="head">Head</option>
-                  <option value="chest">Chest</option>
-                  <option value="abdomen">Abdomen</option>
-                  <option value="spine">Spine</option>
-                  <option value="extremities">Extremities</option>
-                </select>
+                />
               </div>
             </div>
 
-            {/* Comments */}
             <div>
               <label htmlFor="comments" className="block text-sm font-medium text-gray-300">
                 Additional Comments
@@ -159,24 +185,41 @@ const ImageUpload = () => {
                 id="comments"
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
-                rows={4}
-                className="mt-1 block w-full rounded-md border-gray-600 bg-[#2d3748] text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                rows={3}
                 placeholder="Any specific concerns or symptoms..."
+                className="mt-1 block w-full rounded-md border-gray-600 bg-[#2d3748] text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={!isFormValid}
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                isFormValid
-                  ? 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-                  : 'bg-gray-600 cursor-not-allowed'
-              }`}
-            >
-              Analyze Image
-            </button>
+            {error && (
+              <div className="text-red-500 text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={loading || !image}
+                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white 
+                  ${loading || !image 
+                    ? 'bg-indigo-500 opacity-50 cursor-not-allowed' 
+                    : 'bg-indigo-600 hover:bg-indigo-700'
+                  }`}
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Analyzing...
+                  </>
+                ) : (
+                  'Analyze Image'
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>
