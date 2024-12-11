@@ -1,17 +1,17 @@
 import { generateAnalysisPrompt } from './prompts';
 
-// Replace with Gemini API key
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+// Replace with OpenAI API key
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
-// Replace with Gemini API endpoint
-const GEMINI_API_ENDPOINT="https://generativelanguage.googleapis.com"
+// Replace with OpenAI API endpoint
+const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 
 /**
- * This file needs to be updated to use the Gemini API instead of OpenAI.
+ * This file needs to be updated to use the OpenAI API instead of Gemini.
  * 
- * 1. Replace `GEMINI_API_ENDPOINT` with the correct Gemini API endpoint.
- * 2. Update the request body structure to match the Gemini API requirements.
- * 3. Adjust error handling and response parsing as needed for Gemini.
+ * 1. Replace `OPENAI_API_ENDPOINT` with the correct OpenAI API endpoint.
+ * 2. Update the request body structure to match the OpenAI API requirements.
+ * 3. Adjust error handling and response parsing as needed for OpenAI.
  */
 
 export interface AnalysisRequest {
@@ -29,7 +29,7 @@ export interface AnalysisResponse {
 }
 
 function parseAnalysisResponse(content: string): AnalysisResponse {
-  console.log('Raw Gemini response:', content);
+  console.log('Raw GPT response:', content);
   
   // Initialize result object
   const result: AnalysisResponse = {
@@ -91,27 +91,47 @@ function parseAnalysisResponse(content: string): AnalysisResponse {
 export async function analyzeImage(request: AnalysisRequest): Promise<AnalysisResponse> {
   try {
     const prompt = generateAnalysisPrompt(request.imageType, request.bodyArea, request.comments);
-    console.log('Sending prompt to Gemini:', prompt);
+    console.log('Sending prompt to GPT-4:', prompt);
 
-    // Replace with Gemini API request
-    const response = await fetch(GEMINI_API_ENDPOINT, {
+    const response = await fetch(OPENAI_API_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GEMINI_API_KEY}`
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
-      body: JSON.stringify({ 
-        // Update with Gemini request body format
-        prompt: prompt, 
-        image: request.imageBase64 
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: prompt
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: request.imageBase64
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7
       })
     });
 
-    console.log('Gemini raw response:', JSON.stringify(response, null, 2));
-    const content = await response.text(); // Assuming Gemini returns plain text
-    
-    // Update response parsing logic if needed for Gemini
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('OpenAI API error:', error);
+      throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
+    }
 
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+    
     return parseAnalysisResponse(content);
   } catch (error) {
     console.error('Error analyzing image:', error);
