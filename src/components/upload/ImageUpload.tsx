@@ -91,14 +91,14 @@ const ImageUpload = () => {
 
   return (
     <div className="min-h-screen bg-[#0f1629] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-[#1a2137] rounded-lg shadow-xl p-8">
-          <h2 className="text-3xl font-bold text-white mb-8">Upload Medical Image</h2>
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-[#1a2137] rounded-lg shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-white mb-6">Upload Medical Image</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image Upload Area */}
             <div 
-              className={`relative border-2 border-dashed rounded-lg p-6 ${
+              className={`relative border-2 border-dashed rounded-lg p-4 ${
                 dragActive ? 'border-indigo-500 bg-indigo-50/5' : 'border-gray-600 hover:border-indigo-500'
               }`}
               onDragEnter={handleDrag}
@@ -115,17 +115,17 @@ const ImageUpload = () => {
               
               <div className="text-center">
                 {preview ? (
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <img 
                       src={preview} 
                       alt="Preview" 
-                      className="mx-auto max-h-64 rounded-lg"
+                      className="mx-auto max-h-48 rounded-lg"
                     />
                   </div>
                 ) : (
                   <div className="text-gray-400">
                     <svg 
-                      className="mx-auto h-12 w-12 text-gray-500" 
+                      className="mx-auto h-10 w-10 text-gray-500" 
                       stroke="currentColor" 
                       fill="none" 
                       viewBox="0 0 48 48" 
@@ -138,14 +138,14 @@ const ImageUpload = () => {
                         d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" 
                       />
                     </svg>
-                    <p className="mt-1">Drag and drop an image, or click to select</p>
+                    <p className="mt-1 text-sm">Drag and drop an image, or click to select</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Form Fields */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="imageType" className="block text-sm font-medium text-gray-300">
                   Image Type*
@@ -158,7 +158,6 @@ const ImageUpload = () => {
                 >
                   <option value="X-Ray">X-Ray</option>
                   <option value="MRI">MRI</option>
-                  <option value="CT">CT Scan</option>
                 </select>
               </div>
 
@@ -166,14 +165,19 @@ const ImageUpload = () => {
                 <label htmlFor="bodyArea" className="block text-sm font-medium text-gray-300">
                   Body Area*
                 </label>
-                <input
-                  type="text"
+                <select
                   id="bodyArea"
                   value={bodyArea}
                   onChange={(e) => setBodyArea(e.target.value)}
-                  placeholder="e.g., Chest, Knee, Lower Back"
                   className="mt-1 block w-full rounded-md border-gray-600 bg-[#2d3748] text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                />
+                >
+                  <option value="">Select Area</option>
+                  <option value="Head">Head</option>
+                  <option value="Chest">Chest</option>
+                  <option value="Abdomen">Abdomen</option>
+                  <option value="Spine">Spine</option>
+                  <option value="Extremities">Extremities</option>
+                </select>
               </div>
             </div>
 
