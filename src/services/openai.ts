@@ -1,18 +1,11 @@
 import { generateAnalysisPrompt } from './prompts';
 
-// Replace with OpenAI API key
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+if (!OPENAI_API_KEY) {
+  console.error('OpenAI API key not found. Please check your .env file.');
+}
 
-// Replace with OpenAI API endpoint
-const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-
-/**
- * This file needs to be updated to use the OpenAI API instead of Gemini.
- * 
- * 1. Replace `OPENAI_API_ENDPOINT` with the correct OpenAI API endpoint.
- * 2. Update the request body structure to match the OpenAI API requirements.
- * 3. Adjust error handling and response parsing as needed for OpenAI.
- */
+const OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 export interface AnalysisRequest {
   imageType: string;
@@ -93,6 +86,9 @@ export async function analyzeImage(request: AnalysisRequest): Promise<AnalysisRe
     const prompt = generateAnalysisPrompt(request.imageType, request.bodyArea, request.comments);
     console.log('Sending prompt to GPT-4:', prompt);
 
+    // Log the first few characters of the base64 string to verify format
+    console.log('Image base64 prefix:', request.imageBase64.substring(0, 50));
+
     const response = await fetch(OPENAI_API_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -100,7 +96,7 @@ export async function analyzeImage(request: AnalysisRequest): Promise<AnalysisRe
         'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "user",
@@ -112,14 +108,14 @@ export async function analyzeImage(request: AnalysisRequest): Promise<AnalysisRe
               {
                 type: "image_url",
                 image_url: {
-                  url: request.imageBase64
+                  url: request.imageBase64.startsWith('data:image/')
+                    ? request.imageBase64
+                    : `data:image/jpeg;base64,${request.imageBase64}`
                 }
               }
             ]
           }
-        ],
-        max_tokens: 1000,
-        temperature: 0.7
+        ]
       })
     });
 
@@ -130,6 +126,7 @@ export async function analyzeImage(request: AnalysisRequest): Promise<AnalysisRe
     }
 
     const data = await response.json();
+    console.log('OpenAI API response:', data);
     const content = data.choices[0].message.content;
     
     return parseAnalysisResponse(content);
