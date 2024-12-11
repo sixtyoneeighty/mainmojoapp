@@ -45,21 +45,9 @@ function AppRoutes() {
               <CreateProfile />
             </ProtectedRoute>
           } />
-          <Route path="/upload" element={
-            <ProtectedRoute>
-              <ImageUpload />
-            </ProtectedRoute>
-          } />
-          <Route path="/processing" element={
-            <ProtectedRoute>
-              <Processing />
-            </ProtectedRoute>
-          } />
-          <Route path="/results" element={
-            <ProtectedRoute>
-              <Results />
-            </ProtectedRoute>
-          } />
+          <Route path="/upload" element={<ImageUpload />} />
+          <Route path="/processing" element={<Processing />} />
+          <Route path="/results" element={<Results />} />
         </Routes>
       </div>
     </Router>
